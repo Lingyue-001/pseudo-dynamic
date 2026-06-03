@@ -1,142 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Pseudodynamic Website Directory</title>
-    <style>
-      body {
-        font-family: Georgia, 'Times New Roman', serif;
-        background-color: #f8f5f2;
-        color: #333;
-        max-width: 700px;
-        margin: auto;
-        padding: 3em 1.5em;
-        line-height: 1.6;
-        position: relative;
-      }
+  <meta charset="UTF-8">
+  <title>Astral Artifacts Collection</title>
+  <style>
+    :root {
+      --papyrus: #fdf6e3;
+      --lapis: #4b6a74;
+      --hematite: #8b5c4a;
+      --sandstone: #d9c9a3;
+      --desert-shadow: rgba(0, 0, 0, 0.06);
+      --ink: #2f2f2f;
+      --gray: #666;
+    }
 
-      h1 {
-        font-size: 2em;
-        margin-bottom: 1em;
-        border-bottom: 2px solid #ccc;
-        padding-bottom: 0.3em;
-      }
+    body {
+      font-family: 'Georgia', serif;
+      background-color: var(--papyrus);
+      color: var(--ink);
+      margin: 0;
+      padding: 2rem;
+    }
 
-      p {
-        margin-bottom: 2em;
-      }
+    h1 {
+      text-align: center;
+      margin-bottom: 2rem;
+      font-size: 2rem;
+      color: var(--lapis);
+      border-bottom: 2px solid var(--sandstone);
+      padding-bottom: 0.5rem;
+      letter-spacing: 0.03em;
+    }
 
-      a {
-        text-decoration: none;
-        color: #0066cc;
-        font-weight: bold;
-        transition: color 0.3s ease;
-      }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1.8rem;
+    }
 
-      a:hover {
-        color: #004499;
-      }
+    .card {
+      background-color: #fcfaf5;
+      border: 1px solid var(--sandstone);
+      border-radius: 8px;
+      box-shadow: 0 2px 6px var(--desert-shadow);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s ease;
+    }
 
-      ul {
-        list-style: none;
-        padding: 0;
-      }
+    .card-meta {
+      font-size: 0.9em;
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
 
-      li {
-        background: #fff;
-        padding: 1em;
-        margin-bottom: 1em;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.06);
-        transition: transform 0.2s ease;
-      }
+    .card:hover {
+      transform: translateY(-2px);
+    }
 
-      li:hover {
-        transform: translateY(-2px);
-      }
+    .card img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-bottom: 1px solid var(--sandstone);
+    }
 
-      .no-link {
-        color: #aaa;
-        text-decoration: line-through;
-        cursor: not-allowed;
-        font-style: italic;
-      }
+    .card-content {
+      padding: 1rem;
+      background-color: #fffef9;
+    }
 
-      /* New CSS for the home icon */
-      .home-link {
-        position: absolute;
-        top: 1em;
-        left: -100px; /* Move it outside the left margin */
-      }
+    .card-title {
+      font-size: 1rem;
+      font-weight: bold;
+      margin-bottom: 0.4rem;
+      color: var(--hematite);
+    }
 
-      .home-link img {
-        width: 88px;
-        height: auto;
-        border-radius: 4px;
-        cursor: pointer;
-        background-color: #fff;
-        box-shadow: 0 0 5px rgba(0,0,0,0.2);
-      }
+    .card-description {
+      font-size: 0.8rem;
+      color: var(--gray);
+      line-height: 1.5;
+    }
 
-      .home-link img:hover {
-        box-shadow: 0 0 8px rgba(0,0,0,0.3);
-      }
-    </style>
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    a:hover .card-title {
+      color: var(--lapis);
+    }
+
+    a:hover {
+      text-decoration: none;
+    }
+  </style>
 </head>
+
 <body>
-  <!-- Home icon link -->
-  <a class="home-link" href="https://14143-dh-sustainability.github.io">
-    <img src="poster_small.png" alt="Home" />
-  </a>
-  
-  <h1>Pseudodynamic Website Directory</h1>
-
-  <p>
-    <a href="https://docs.google.com/spreadsheets/d/1VBVZlviaFWJ0L2JX4A2HyWmc30UwDqUTb3RlgLkORWA/edit?usp=sharing" target="_blank">
-        ➕ Add your website to the list
-    </a>
-  </p>
-
-  <ul id="link-list"></ul>
+  <h1>Astral Artifacts Collection</h1>
+  <div class="gallery" id="gallery"></div>
 
   <script>
-    // const jsonUrl = "https://api.sheetbest.com/sheets/0cd08c73-9ea2-49d1-8f83-e8652144cce5";
-    // const jsonUrl = "https://opensheet.elk.sh/1VBVZlviaFWJ0L2JX4A2HyWmc30UwDqUTb3RlgLkORWA/1";
-    const jsonUrl = "./website_directories.json";
+    let objects = [];
 
-    fetch(jsonUrl)
-      .then(response => {
-        if (!response.ok) throw new Error("Network response was not ok");
-        return response.json();
-      })
+    // const endpoint = 'https://api.sheetbest.com/sheets/f90fc378-8e9a-4850-9783-c500e6b6dbdd';
+    const endpoint = "https://opensheet.elk.sh/1ydP7dH3k7roCDjqESOzZtrqKVhTyz0zpbc6OIN0ERjM/1";
+
+    fetch(endpoint)
+      .then(response => response.json())
       .then(data => {
-        const list = document.getElementById("link-list");
-
         data.forEach(item => {
-          if (item.Directory !== 'pseudodynamic') return; // Skip all items from other homeworks
-          
-          const li = document.createElement("li");
-
-          if (item.Website) {
-            const link = document.createElement("a");
-            link.href = item.Website;
-            link.textContent = item.Name;
-            link.target = "_blank";
-            li.appendChild(link);
-          } else {
-            const span = document.createElement("span");
-            span.textContent = item.Name;
-            span.className = "no-link";
-            li.appendChild(span);
-          }
-
-          list.appendChild(li);
+          objects.push({
+            title: item.Title,
+            image: item.Image,
+            region: item.Region,
+            type: item.Type,
+            date: item.Date,
+            description: item.Description,
+            link: item.Link
+          });
         });
+        renderGallery();
       })
-      .catch(error => {
-        console.error("Error fetching JSON:", error);
+      .catch(error => console.error('Error fetching data:', error));
+
+    function renderGallery() {
+      const gallery = document.getElementById("gallery");
+
+      objects.forEach(obj => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        card.innerHTML = `
+          <a href="${obj.link}" target="_blank">
+            <img src="${obj.image}" alt="${obj.title}">
+            <div class="card-content">
+              <div class="card-title">${obj.title}</div>
+              <div class="card-meta">${obj.region} · ${obj.type} · ${obj.date}</div>
+              <div class="card-description">${obj.description}</div>
+            </div>
+          </a>
+        `;
+
+        gallery.appendChild(card);
       });
+    }
   </script>
 </body>
+
 </html>
